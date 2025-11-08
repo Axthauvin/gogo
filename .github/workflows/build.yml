@@ -1,0 +1,48 @@
+name: Build Extensions
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Build extensions
+        run: node build.js all
+
+      - name: Create Chrome zip
+        run: |
+          cd dist-chrome
+          zip -r ../go-slash-chrome.zip .
+          cd ..
+
+      - name: Create Firefox zip
+        run: |
+          cd dist-firefox
+          zip -r ../go-slash-firefox.zip .
+          cd ..
+
+      - name: Upload Chrome extension
+        uses: actions/upload-artifact@v4
+        with:
+          name: chrome-extension
+          path: go-slash-chrome.zip
+
+      - name: Upload Firefox extension
+        uses: actions/upload-artifact@v4
+        with:
+          name: firefox-extension
+          path: go-slash-firefox.zip
