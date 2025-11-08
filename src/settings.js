@@ -65,7 +65,7 @@ function loadAliases() {
     if (items.length === 0) {
       aliasList.innerHTML = `
         <div class="empty-state">
-          <div class="empty-icon">📋</div>
+          <div class="empty-icon"><img src="./icons/list.svg" width="64" height="64" alt="No aliases" /></div>
           <div class="empty-text">No aliases yet. Create your first one!</div>
         </div>
       `;

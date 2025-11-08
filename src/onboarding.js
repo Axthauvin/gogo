@@ -29,9 +29,21 @@ function nextOnboardingStep() {
     steps[currentStep - 1].classList.add("active");
 
     // Update the first shortcut name in step 3
-    if (currentStep === 3 && selectedShortcuts.length > 0) {
-      document.getElementById("first-shortcut").textContent =
-        selectedShortcuts[0].alias;
+    if (currentStep === 3) {
+      if (selectedShortcuts.length > 0) {
+        document.getElementById("first-shortcut").textContent =
+          selectedShortcuts[0].alias;
+      } else {
+        // If no shortcuts selected, show a custom message
+        const tryItBox = document.querySelector(".try-it-box");
+        const tryItText = tryItBox.querySelector(".try-it-text");
+        tryItText.innerHTML = "go custom-shortcut";
+
+        // Update the subtext
+        const subtext = document.querySelector(".onboarding-subtext");
+        subtext.textContent =
+          "Start by creating a custom shortcut for your favorite site.";
+      }
     }
   }
 
@@ -70,17 +82,9 @@ function setupShortcutCards() {
 }
 
 function customShortcut() {
-  // Save selected shortcuts first
-  if (selectedShortcuts.length > 0) {
-    saveSelectedShortcuts();
-  }
-
-  // Mark onboarding as completed
-  storage.local.set({ onboardingCompleted: true });
-  hideOnboarding();
-
-  // Switch to create section
-  document.querySelector('.nav-item[data-section="create"]').click();
+  // Continue to next step instead of skipping onboarding
+  // This allows the user to see the final step even without pre-selected shortcuts
+  nextOnboardingStep();
 }
 
 function finishOnboarding(askedAlias = null) {
@@ -91,21 +95,26 @@ function finishOnboarding(askedAlias = null) {
       selectedShortcuts = data.selectedShortcuts;
     }
 
-    // Save all selected shortcuts
-    saveSelectedShortcuts();
+    // Save all selected shortcuts (if any)
+    if (selectedShortcuts.length > 0) {
+      saveSelectedShortcuts();
+
+      // Show success message
+      showToast(
+        `${selectedShortcuts.length} shortcuts created! Try typing "go ${selectedShortcuts[0].alias}" in your address bar.`
+      );
+    } else {
+      // No shortcuts selected, show different message
+      showToast("Welcome to GoGo! Create your first shortcut to get started.");
+    }
 
     // Mark onboarding as completed
     storage.local.set({ onboardingCompleted: true });
 
     hideOnboarding();
 
-    // Show success message
-    showToast(
-      `${selectedShortcuts.length} shortcuts created! Try typing "go ${selectedShortcuts[0].alias}" in your address bar.`
-    );
-
     // If there are created aliases from URL params redirect to it
-    if (askedAlias) {
+    if (askedAlias && selectedShortcuts.length > 0) {
       const foundAlias = selectedShortcuts.find((s) => s.alias === askedAlias);
 
       if (foundAlias) {
@@ -116,6 +125,9 @@ function finishOnboarding(askedAlias = null) {
         const targetUrl = foundAlias.url;
         browserAPI.tabs.create({ url: targetUrl });
       }
+    } else if (selectedShortcuts.length === 0) {
+      // If no shortcuts selected, go to create section
+      document.querySelector('.nav-item[data-section="create"]').click();
     }
   });
 }
