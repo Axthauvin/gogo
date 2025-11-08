@@ -15,6 +15,11 @@ Type **`go`** + **`space`** + **`your-alias`** in the address bar to instantly j
 3. Type `go gmail` in your address bar
 4. Press Enter
 
+## Screenshots
+
+![Create a new alias](images/create.png)
+![View Aliases](images/aliases.png)
+
 ## Installation
 
 ### Chrome
