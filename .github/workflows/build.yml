@@ -3,6 +3,8 @@ name: Build Extensions
 on:
   push:
     branches: [main]
+    tags:
+      - "v*"
   pull_request:
     branches: [main]
   workflow_dispatch:
@@ -26,23 +28,34 @@ jobs:
       - name: Create Chrome zip
         run: |
           cd dist-chrome
-          zip -r ../go-slash-chrome.zip .
+          zip -r ../gogo-chrome.zip .
           cd ..
 
       - name: Create Firefox zip
         run: |
           cd dist-firefox
-          zip -r ../go-slash-firefox.zip .
+          zip -r ../gogo-firefox.zip .
           cd ..
 
       - name: Upload Chrome extension
         uses: actions/upload-artifact@v4
         with:
           name: chrome-extension
-          path: go-slash-chrome.zip
+          path: gogo-chrome.zip
 
       - name: Upload Firefox extension
         uses: actions/upload-artifact@v4
         with:
           name: firefox-extension
-          path: go-slash-firefox.zip
+          path: gogo-firefox.zip
+
+      - name: Create Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            gogo-chrome.zip
+            gogo-firefox.zip
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
