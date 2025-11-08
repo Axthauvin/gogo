@@ -1,0 +1,27 @@
+{
+  "manifest_version": 3,
+  "name": "Local URL Shortener",
+  "version": "1.0",
+  "description": "Local url shorttener to go faster on the internet.",
+  "permissions": ["tabs", "webNavigation", "storage"],
+  "host_permissions": ["<all_urls>"],
+  "background": {
+    "service_worker": "src/background.js"
+  },
+  "action": {
+    "default_popup": "src/popup.html",
+    "default_title": "Local URL Shortener"
+  },
+  "omnibox": { "keyword": "go" },
+  "options_page": "src/settings.html",
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self';"
+  },
+  "icons": {
+    "16": "src/icons/favicon-16x16.png",
+    "32": "src/icons/favicon-32x32.png",
+    "48": "src/icons/favicon-48x48.png",
+    "64": "src/icons/favicon-64x64.png",
+    "128": "src/icons/favicon-128x128.png"
+  }
+}

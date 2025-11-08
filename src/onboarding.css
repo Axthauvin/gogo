@@ -1,0 +1,175 @@
+/* Onboarding */
+.onboarding-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease;
+}
+
+.onboarding-overlay.hidden {
+  display: none;
+}
+
+.onboarding-container {
+  background: #ffffff;
+  border-radius: 8px;
+  border: 1px solid #e4e4e7;
+  padding: 40px;
+  max-width: 700px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.onboarding-step {
+  display: none;
+  animation: fadeIn 0.3s ease;
+}
+
+.onboarding-step.active {
+  display: block;
+}
+
+.onboarding-title {
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  color: #09090b;
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.onboarding-text {
+  font-size: 16px;
+  color: #71717a;
+  line-height: 1.6;
+  text-align: left;
+  margin-bottom: 32px;
+}
+
+.onboarding-subtext {
+  font-size: 14px;
+  color: #a1a1aa;
+  text-align: center;
+  margin-top: 16px;
+  margin-bottom: 32px;
+}
+
+.btn-onboarding {
+  width: 100%;
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #fafafa;
+  background: #09090b;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-onboarding:hover:not(:disabled) {
+  background: #18181b;
+}
+
+.btn-onboarding:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.btn-onboarding:disabled {
+  background: #e4e4e7;
+  color: #a1a1aa;
+  cursor: not-allowed;
+}
+
+/* Shortcuts Grid */
+.shortcuts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+  margin-bottom: 32px;
+}
+
+.shortcut-card {
+  background: #ffffff;
+  border: 1px solid #e4e4e7;
+  border-radius: 8px;
+  padding: 20px 16px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.shortcut-card:hover {
+  background: #fafafa;
+  border-color: #d4d4d8;
+}
+
+.shortcut-card.selected {
+  background: #fafafa;
+  border-color: #09090b;
+  border-width: 2px;
+}
+
+.shortcut-card.custom-card {
+  border: 2px dashed #d4d4d8;
+  background: #ffffff;
+}
+
+.shortcut-card.custom-card:hover {
+  border-color: #09090b;
+  background: #fafafa;
+}
+
+.shortcut-emoji {
+  font-size: 40px;
+  margin-bottom: 8px;
+}
+
+.shortcut-emoji img {
+  width: 40px;
+  height: 40px;
+}
+
+.shortcut-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: #09090b;
+  margin-bottom: 4px;
+}
+
+.shortcut-desc {
+  font-size: 12px;
+  color: #71717a;
+}
+
+/* Try It Box */
+.try-it-box {
+  background: #fafafa;
+  border: 1px solid #e4e4e7;
+  border-radius: 8px;
+  padding: 24px;
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.try-it-text {
+  font-size: 24px;
+  font-weight: 600;
+  color: #09090b;
+  font-family: "Consolas", "Monaco", monospace;
+}
+
+.try-it-text span {
+  color: #71717a;
+}

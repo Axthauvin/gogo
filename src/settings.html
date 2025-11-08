@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Alias Manager</title>
+    <link rel="stylesheet" href="settings.css" />
+    <link rel="stylesheet" href="toast.css" />
+    <link rel="stylesheet" href="onboarding.css" />
+  </head>
+  <body>
+    <!-- Onboarding Overlay -->
+    <div id="onboarding-overlay" class="onboarding-overlay">
+      <div class="onboarding-container">
+        <!-- Step 1: Welcome -->
+        <div class="onboarding-step active" data-step="1">
+          <h1 class="onboarding-title">Welcome to Alias Manager!</h1>
+          <p class="onboarding-text" style="padding: 0 1em">
+            Thanks for downloading Alias Manager!<br />
+            Create shortcuts to your favorite websites.<br />
+            Type <strong>go + shortcut</strong> in your address bar to jump
+            instantly!
+          </p>
+          <button class="btn-onboarding">Get Started</button>
+        </div>
+
+        <!-- Step 2: Choose shortcuts -->
+        <div class="onboarding-step" data-step="2">
+          <h1 class="onboarding-title">Pick Your First Shortcuts</h1>
+          <p class="onboarding-text">
+            Choose some popular shortcuts to get started
+          </p>
+
+          <div class="shortcuts-grid">
+            <div
+              class="shortcut-card"
+              data-alias="gmail"
+              data-url="https://mail.google.com"
+            >
+              <div class="shortcut-emoji">
+                <img src="./icons/socials/gmail-svgrepo-com.svg" alt="Gmail" />
+              </div>
+              <div class="shortcut-name">go gmail</div>
+              <div class="shortcut-desc">Gmail</div>
+            </div>
+            <div
+              class="shortcut-card"
+              data-alias="github"
+              data-url="https://github.com"
+            >
+              <div class="shortcut-emoji">
+                <img
+                  src="./icons/socials/github-svgrepo-com.svg"
+                  alt="GitHub"
+                />
+              </div>
+              <div class="shortcut-name">go github</div>
+              <div class="shortcut-desc">GitHub</div>
+            </div>
+            <div
+              class="shortcut-card"
+              data-alias="youtube"
+              data-url="https://youtube.com"
+            >
+              <div class="shortcut-emoji">
+                <img
+                  src="./icons/socials/youtube-svgrepo-com.svg"
+                  alt="YouTube"
+                />
+              </div>
+              <div class="shortcut-name">go youtube</div>
+              <div class="shortcut-desc">YouTube</div>
+            </div>
+            <div
+              class="shortcut-card"
+              data-alias="twitter"
+              data-url="https://twitter.com"
+            >
+              <div class="shortcut-emoji">
+                <img
+                  src="./icons/socials/twitter-svgrepo-com.svg"
+                  alt="Twitter"
+                />
+              </div>
+              <div class="shortcut-name">go twitter</div>
+              <div class="shortcut-desc">Twitter / X</div>
+            </div>
+            <div
+              class="shortcut-card"
+              data-alias="linkedin"
+              data-url="https://linkedin.com"
+            >
+              <div class="shortcut-emoji">
+                <img
+                  src="./icons/socials/linkedin-svgrepo-com.svg"
+                  alt="LinkedIn"
+                />
+              </div>
+              <div class="shortcut-name">go linkedin</div>
+              <div class="shortcut-desc">LinkedIn</div>
+            </div>
+            <div
+              class="shortcut-card"
+              data-alias="reddit"
+              data-url="https://reddit.com"
+            >
+              <div class="shortcut-emoji">
+                <img
+                  src="./icons/socials/reddit-svgrepo-com.svg"
+                  alt="Reddit"
+                />
+              </div>
+              <div class="shortcut-name">go reddit</div>
+              <div class="shortcut-desc">Reddit</div>
+            </div>
+            <div class="shortcut-card custom-card" id="custom-shortcut-btn">
+              <div class="shortcut-emoji">
+                <img src="./icons/pencil.svg" alt="Custom" />
+              </div>
+              <div class="shortcut-name">go custom</div>
+              <div class="shortcut-desc">Create your own</div>
+            </div>
+          </div>
+
+          <button class="btn-onboarding" id="continue-btn" disabled>
+            Continue (<span id="selected-count">0</span> selected)
+          </button>
+        </div>
+
+        <!-- Step 3: Finish -->
+        <div class="onboarding-step" data-step="3">
+          <h1 class="onboarding-title">You're Good to Go!</h1>
+          <p class="onboarding-text">Try it now! Type in your address bar:</p>
+
+          <div class="try-it-box">
+            <span class="try-it-text"
+              >go <span id="first-shortcut">gmail</span></span
+            >
+          </div>
+
+          <p class="onboarding-subtext">
+            Press Enter and you'll jump right there!
+          </p>
+
+          <button class="btn-onboarding" id="finish-btn">
+            Start Using Alias Manager
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="nav">
+      <div class="nav-content">
+        <ul class="nav-items">
+          <li class="nav-item active" data-section="create">Create New</li>
+          <li class="nav-item" data-section="list">List Aliases</li>
+          <li class="nav-item" data-section="help">Help</li>
+        </ul>
+      </div>
+    </nav>
+
+    <div class="container">
+      <!-- Section 1: Create New Alias -->
+      <section id="create-section" class="section active">
+        <h1 class="section-title">Create Alias</h1>
+        <p class="section-subtitle">
+          Add a new shortcut to your favorite destinations
+        </p>
+
+        <div class="form-container">
+          <form id="alias-form">
+            <div class="form-group">
+              <label class="form-label" for="alias-name">Alias Name</label>
+              <input
+                type="text"
+                id="alias-name"
+                class="form-input"
+                placeholder="MyAlias"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="alias-url">Target URL</label>
+              <input
+                type="url"
+                id="alias-url"
+                class="form-input"
+                placeholder="https://example.com"
+                required
+              />
+            </div>
+            <button type="submit" class="btn-primary">Create Alias</button>
+          </form>
+        </div>
+      </section>
+
+      <!-- Section 2: List Aliases -->
+      <section id="list-section" class="section">
+        <h1 class="section-title">Your Aliases</h1>
+        <p class="section-subtitle">Manage all your shortcuts in one place</p>
+
+        <div class="list-container">
+          <div id="alias-list" class="alias-list">
+            <!-- Aliases will be dynamically inserted here -->
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 3: Help -->
+      <section id="help-section" class="section">
+        <h1 class="section-title">How to Use</h1>
+        <p class="section-subtitle">Quick guide to get you started</p>
+
+        <div class="help-container">
+          <div class="help-card">
+            <div class="help-number">1</div>
+            <div class="help-content">
+              <h3>Create a shortcut</h3>
+              <p>
+                Go to "Create New" and add an alias like <code>gmail</code> →
+                <code>https://mail.google.com</code>
+                <br />
+                You can also click on the extension icon to quickly add the
+                current page as a shortcut.
+              </p>
+            </div>
+          </div>
+
+          <div class="help-card">
+            <div class="help-number">2</div>
+            <div class="help-content">
+              <h3>Use it</h3>
+              <p>
+                Type <code>go gmail</code> in your address bar and press Enter
+              </p>
+            </div>
+          </div>
+
+          <div class="help-card">
+            <div class="help-number">3</div>
+            <div class="help-content">
+              <h3>That's it!</h3>
+              <p>
+                You'll jump straight to Gmail. Create more shortcuts for all
+                your favorite sites.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div class="toast-container" id="toast">
+      <div class="toast">
+        <div class="toast-icon"></div>
+        <div class="toast-content">
+          <div class="toast-title">Alias Created</div>
+          <div class="toast-message">Your new alias is ready to use</div>
+        </div>
+      </div>
+    </div>
+
+    <script src="onboarding.js"></script>
+    <script src="settings.js"></script>
+  </body>
+</html>
