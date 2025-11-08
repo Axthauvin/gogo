@@ -1,6 +1,15 @@
+const browserAPI = typeof browser !== "undefined" ? browser : chrome;
+
+// Onboarding state
+let selectedShortcuts = [];
+let currentStep = 1;
+
 // Onboarding functions
-function showOnboarding() {
+function showOnboarding(step = null) {
   document.getElementById("onboarding-overlay").classList.remove("hidden");
+  if (step) {
+    nextOnboardingStep();
+  }
 }
 
 function hideOnboarding() {
@@ -9,7 +18,11 @@ function hideOnboarding() {
 
 function nextOnboardingStep() {
   const steps = document.querySelectorAll(".onboarding-step");
+  console.log("Current onboarding step:", currentStep);
+  console.log("Steps available:", steps);
+
   steps[currentStep - 1].classList.remove("active");
+
   currentStep++;
 
   if (currentStep <= steps.length) {
@@ -21,6 +34,9 @@ function nextOnboardingStep() {
         selectedShortcuts[0].alias;
     }
   }
+
+  // Save progress after each step
+  storage.local.set({ onboardingStep: currentStep });
 }
 
 function setupShortcutCards() {
@@ -43,6 +59,9 @@ function setupShortcutCards() {
         selectedShortcuts.push({ alias, url });
       }
 
+      // Save selected shortcuts in onboarding state
+      storage.local.set({ selectedShortcuts });
+
       // Update button state
       selectedCount.textContent = selectedShortcuts.length;
       continueBtn.disabled = selectedShortcuts.length === 0;
@@ -64,24 +83,46 @@ function customShortcut() {
   document.querySelector('.nav-item[data-section="create"]').click();
 }
 
-function finishOnboarding() {
-  // Save all selected shortcuts
-  saveSelectedShortcuts();
+function finishOnboarding(askedAlias = null) {
+  // Load selectedShortcuts from storage in case of page reload
+  storage.local.get("selectedShortcuts").then((data) => {
+    console.log("Loaded selectedShortcuts from storage:", data);
+    if (data.selectedShortcuts) {
+      selectedShortcuts = data.selectedShortcuts;
+    }
 
-  // Mark onboarding as completed
-  storage.local.set({ onboardingCompleted: true });
+    // Save all selected shortcuts
+    saveSelectedShortcuts();
 
-  hideOnboarding();
+    // Mark onboarding as completed
+    storage.local.set({ onboardingCompleted: true });
 
-  // Show success message
-  showToast(
-    `${selectedShortcuts.length} shortcuts created! Try typing "go ${selectedShortcuts[0].alias}" in your address bar.`
-  );
+    hideOnboarding();
+
+    // Show success message
+    showToast(
+      `${selectedShortcuts.length} shortcuts created! Try typing "go ${selectedShortcuts[0].alias}" in your address bar.`
+    );
+
+    // If there are created aliases from URL params redirect to it
+    if (askedAlias) {
+      const foundAlias = selectedShortcuts.find((s) => s.alias === askedAlias);
+
+      if (foundAlias) {
+        // Navigate to aliases list
+        document.querySelector('.nav-item[data-section="list"]').click();
+
+        // Open the created alias page
+        const targetUrl = foundAlias.url;
+        browserAPI.tabs.create({ url: targetUrl });
+      }
+    }
+  });
 }
 
 function saveSelectedShortcuts() {
   storage.local.get("aliases").then((data) => {
-    const items = data.aliases || [];
+    const items = data && data.aliases ? data.aliases : [];
     selectedShortcuts.forEach((shortcut) => {
       // Check if alias doesn't already exist
       if (!items.find((item) => item.alias === shortcut.alias)) {

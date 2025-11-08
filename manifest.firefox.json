@@ -1,8 +1,8 @@
 {
   "manifest_version": 2,
-  "name": "Local URL Shortener",
+  "name": "Gogo - Local URL Shortener",
   "version": "1.0",
-  "description": "Local url shorttener to go faster on the internet.",
+  "description": "Local url shortener to go faster on the internet.",
   "permissions": ["tabs", "webNavigation", "storage", "<all_urls>"],
   "background": {
     "scripts": ["src/background.js"],
@@ -10,7 +10,7 @@
   },
   "browser_action": {
     "default_popup": "src/popup.html",
-    "default_title": "Local URL Shortener"
+    "default_title": "Gogo - Local URL Shortener"
   },
   "omnibox": {
     "keyword": "go"
@@ -19,9 +19,7 @@
   "content_security_policy": "script-src 'self'; object-src 'self'",
   "icons": {
     "16": "src/icons/favicon-16x16.png",
-    "32": "src/icons/favicon-32x32.png",
     "48": "src/icons/favicon-48x48.png",
-    "64": "src/icons/favicon-64x64.png",
     "128": "src/icons/favicon-128x128.png"
   }
 }

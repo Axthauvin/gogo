@@ -2,15 +2,22 @@
 const storage =
   (typeof browser !== "undefined" && browser.storage) || chrome.storage;
 
-// Onboarding state
-let selectedShortcuts = [];
-let currentStep = 1;
-
 // Check if onboarding has been completed
 document.addEventListener("DOMContentLoaded", () => {
   storage.local.get("onboardingCompleted").then((data) => {
     if (!data.onboardingCompleted) {
-      showOnboarding();
+      // Check saved onboarding step
+      storage.local.get("onboardingStep").then((stepData) => {
+        if (stepData.onboardingStep) {
+          currentStep = stepData.onboardingStep;
+          const createdAlias = readAskCreation();
+          if (currentStep == 3)
+            finishOnboarding(createdAlias); // This is the last step
+          else showOnboarding(currentStep);
+        } else {
+          showOnboarding();
+        }
+      });
     } else {
       hideOnboarding();
     }
@@ -207,4 +214,12 @@ function showToast(message) {
   setTimeout(() => {
     toast.classList.remove("show");
   }, 3000);
+}
+
+function readAskCreation() {
+  const params = new URLSearchParams(window.location.search);
+  console.log("URL Params:", params);
+  const created = params.get("create");
+  console.log("Asked creation for alias:", created);
+  return created;
 }

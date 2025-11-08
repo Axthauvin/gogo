@@ -43,3 +43,12 @@ browserAPI.omnibox.onInputEntered.addListener(async (text, disposition) => {
   // open in new tab
   await browserAPI.tabs.create({ url: target });
 });
+
+browserAPI.runtime.onInstalled.addListener((details) => {
+  if (details.reason === "install") {
+    // Open the onboarding page in a new tab
+    const settingsPath = browserAPI.runtime.getURL("src/settings.html");
+
+    chrome.tabs.create({ url: settingsPath });
+  }
+});
