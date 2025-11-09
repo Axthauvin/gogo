@@ -38,6 +38,31 @@ jobs:
           zip -r -X ../gogo-firefox.xpi .
           cd ..
 
+      - name: Install web-ext
+        if: startsWith(github.ref, 'refs/tags/')
+        run: npm install --global web-ext
+
+      - name: Sign Firefox extension on AMO
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          WEB_EXT_API_KEY: ${{ secrets.AMO_JWT_ISSUER }}
+          WEB_EXT_API_SECRET: ${{ secrets.AMO_JWT_SECRET }}
+        run: |
+          web-ext sign \
+            --source-dir=dist-firefox \
+            --artifacts-dir=signed \
+            --api-key=$WEB_EXT_API_KEY \
+            --api-secret=$WEB_EXT_API_SECRET \
+            --id="${{ secrets.EXTENSION_ID }}" \
+            --channel=listed
+
+      - name: Move signed extension
+        if: startsWith(github.ref, 'refs/tags/')
+        run: |
+          if [ -f signed/*.xpi ]; then
+            mv signed/*.xpi gogo-firefox-signed.xpi
+          fi
+
       - name: Upload Chrome extension
         uses: actions/upload-artifact@v4
         with:
@@ -50,6 +75,13 @@ jobs:
           name: firefox-extension
           path: gogo-firefox.xpi
 
+      - name: Upload signed Firefox extension
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: actions/upload-artifact@v4
+        with:
+          name: firefox-extension-signed
+          path: gogo-firefox-signed.xpi
+
       - name: Create Release
         if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v1
@@ -57,6 +89,7 @@ jobs:
           files: |
             gogo-chrome.zip
             gogo-firefox.xpi
+            gogo-firefox-signed.xpi
           generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
