@@ -35,7 +35,7 @@ jobs:
         run: |
           cd dist-firefox
           # An XPI is just a ZIP with an .xpi extension
-          zip -r ../gogo-firefox.xpi .
+          zip -r -X ../gogo-firefox.xpi .
           cd ..
 
       - name: Upload Chrome extension

@@ -21,5 +21,10 @@
     "16": "src/icons/favicon-16x16.png",
     "48": "src/icons/favicon-48x48.png",
     "128": "src/icons/favicon-128x128.png"
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "ax.thauvin@gmail.com"
+    }
   }
 }
