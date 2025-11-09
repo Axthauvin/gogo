@@ -53,7 +53,6 @@ jobs:
             --artifacts-dir=signed \
             --api-key=$WEB_EXT_API_KEY \
             --api-secret=$WEB_EXT_API_SECRET \
-            --id="${{ secrets.EXTENSION_ID }}" \
             --channel=listed
 
       - name: Move signed extension
