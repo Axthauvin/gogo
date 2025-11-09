@@ -59,7 +59,7 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
         run: |
           if [ -f signed/*.xpi ]; then
-            mv signed/*.xpi gogo-firefox-signed.xpi
+            mv signed/*.xpi gogo-firefox.xpi
           fi
 
       - name: Upload Chrome extension
@@ -68,10 +68,10 @@ jobs:
           name: chrome-extension
           path: gogo-chrome.zip
 
-      - name: Upload Firefox extension
+      - name: Upload Firefox extension (unsigned)
         uses: actions/upload-artifact@v4
         with:
-          name: firefox-extension
+          name: firefox-extension-unsigned
           path: gogo-firefox.xpi
 
       - name: Upload signed Firefox extension
@@ -79,7 +79,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: firefox-extension-signed
-          path: gogo-firefox-signed.xpi
+          path: gogo-firefox.xpi
 
       - name: Create Release
         if: startsWith(github.ref, 'refs/tags/')
@@ -88,7 +88,25 @@ jobs:
           files: |
             gogo-chrome.zip
             gogo-firefox.xpi
-            gogo-firefox-signed.xpi
+          body: |
+            ## 📦 Installation Instructions
+
+            ### Chrome/Edge/Brave
+            1. Download `gogo-chrome.zip`
+            2. Extract the ZIP file
+            3. Open `chrome://extensions/` (or `edge://extensions/`)
+            4. Enable **Developer mode**
+            5. Click **Load unpacked**
+            6. Select the extracted folder
+
+            ### Firefox
+            1. Download `gogo-firefox.xpi`
+            2. Simply **drag and drop** the file into Firefox
+            3. Confirm the installation prompt
+
+            This Firefox extension is **officially signed** by Mozilla and can be installed directly without any configuration changes!
+
+            ---
           generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -30,23 +30,13 @@ Type **`go`** + **`space`** + **`your-shortcut`** in the address bar to instantl
 
 ### Firefox
 
-1. Download the file **`gogo-firefox.xpi`** from the latest release.
+1. Download the file **`gogo-firefox.xpi`** from the [latest release](https://github.com/Axthauvin/gogo/releases/latest).
 2. In Firefox, simply **drag and drop** the `.xpi` file into an open browser window.
 3. Confirm the installation prompt.
 
-That’s it, GoGo is ready to use!
+That's it, GoGo is ready to use!
 
-#### Signature issue
-
-If Firefox blocks installation because the extension is **unsigned**, you can temporarily allow unsigned extensions:
-
-1. Open a new tab and visit `about:config`
-2. Search for the preference: `xpinstall.signatures.required`
-3. Set it to `false`
-4. Try installing the `.xpi` file again (drag-and-drop or open the file in Firefox)
-
-> ⚠️ **Warning:** disabling signature checks lowers your browser’s security.  
-> Only do this for local testing or development. Prefer official signed versions whenever possible.
+> ✅ The Firefox extension is **officially signed** by Mozilla and can be installed directly without any configuration changes.
 
 ---
 
