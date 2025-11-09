@@ -49,6 +49,7 @@ function nextOnboardingStep() {
 
   // Save progress after each step
   storage.local.set({ onboardingStep: currentStep });
+  saveSelectedShortcuts();
 }
 
 function setupShortcutCards() {

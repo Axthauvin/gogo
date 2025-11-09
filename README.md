@@ -1,23 +1,24 @@
+````markdown
 # GoGo
 
 A browser extension that lets you create custom shortcuts to your favorite websites.
 
-![Create a new alias](images/create.png)
+![Create a new shortcut](images/create.png)
 
 ## What does it do?
 
-Type **`go`** + **`space`** + **`your-alias`** in the address bar to instantly jump to any URL you've saved.
+Type **`go`** + **`space`** + **`your-shortcut`** in the address bar to instantly jump to any URL you've saved.
 
 ## Quick Start
 
 1. Install the extension
-2. Create an alias (e.g., `gmail` → `https://mail.google.com`)
+2. Create a shortcut (e.g., `gmail` → `https://mail.google.com`)
 3. Type `go gmail` in your address bar
 4. Press Enter
 
 ## Screenshots
 
-![View Aliases](images/aliases.png)
+![View Shortcuts](images/aliases.png)
 
 ## Installation
 
@@ -57,3 +58,4 @@ node build.js all
 ```
 
 Made with ❤️ by Axel
+````

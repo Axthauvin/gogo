@@ -44,7 +44,7 @@
             </div>
             <div
               class="shortcut-card"
-              data-alias="github"
+              data-alias="git"
               data-url="https://github.com"
             >
               <div class="shortcut-emoji">
@@ -53,12 +53,12 @@
                   alt="GitHub"
                 />
               </div>
-              <div class="shortcut-name">go github</div>
+              <div class="shortcut-name">go git</div>
               <div class="shortcut-desc">GitHub</div>
             </div>
             <div
               class="shortcut-card"
-              data-alias="youtube"
+              data-alias="yt"
               data-url="https://youtube.com"
             >
               <div class="shortcut-emoji">
@@ -67,21 +67,14 @@
                   alt="YouTube"
                 />
               </div>
-              <div class="shortcut-name">go youtube</div>
+              <div class="shortcut-name">go yt</div>
               <div class="shortcut-desc">YouTube</div>
             </div>
-            <div
-              class="shortcut-card"
-              data-alias="twitter"
-              data-url="https://twitter.com"
-            >
+            <div class="shortcut-card" data-alias="x" data-url="https://x.com">
               <div class="shortcut-emoji">
-                <img
-                  src="./icons/socials/twitter-svgrepo-com.svg"
-                  alt="Twitter"
-                />
+                <img src="./icons/socials/x-svgrepo-com.svg" alt="X" />
               </div>
-              <div class="shortcut-name">go twitter</div>
+              <div class="shortcut-name">go x</div>
               <div class="shortcut-desc">Twitter / X</div>
             </div>
             <div
@@ -153,16 +146,16 @@
       <div class="nav-content">
         <ul class="nav-items">
           <li class="nav-item active" data-section="create">Create New</li>
-          <li class="nav-item" data-section="list">List Aliases</li>
+          <li class="nav-item" data-section="list">List Shortcuts</li>
           <li class="nav-item" data-section="help">Help</li>
         </ul>
       </div>
     </nav>
 
     <div class="container">
-      <!-- Section 1: Create New Alias -->
+      <!-- Section 1: Create New Shortcut -->
       <section id="create-section" class="section active">
-        <h1 class="section-title">Create Alias</h1>
+        <h1 class="section-title">Create Shortcut</h1>
         <p class="section-subtitle">
           Add a new shortcut to your favorite destinations
         </p>
@@ -170,12 +163,12 @@
         <div class="form-container">
           <form id="alias-form">
             <div class="form-group">
-              <label class="form-label" for="alias-name">Alias Name</label>
+              <label class="form-label" for="alias-name">Shortcut Name</label>
               <input
                 type="text"
                 id="alias-name"
                 class="form-input"
-                placeholder="MyAlias"
+                placeholder="MyShortcut"
                 required
               />
             </div>
@@ -189,19 +182,103 @@
                 required
               />
             </div>
-            <button type="submit" class="btn-primary">Create Alias</button>
+            <button type="submit" class="btn-primary">Create Shortcut</button>
           </form>
         </div>
       </section>
 
-      <!-- Section 2: List Aliases -->
+      <!-- Section 2: List Shortcuts -->
       <section id="list-section" class="section">
-        <h1 class="section-title">Your Aliases</h1>
+        <h1 class="section-title">Your Shortcuts</h1>
         <p class="section-subtitle">Manage all your shortcuts in one place</p>
 
         <div class="list-container">
+          <!-- Search Bar -->
+          <div class="search-container">
+            <input
+              type="text"
+              id="search-input"
+              class="search-input"
+              placeholder="Search shortcuts..."
+            />
+          </div>
+
+          <!-- Export/Import Controls -->
+          <div class="export-import-container">
+            <button id="export-btn" class="btn-secondary">
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M21 15V19C21 19.5304 20.7893 20.0391 20.4142 20.4142C20.0391 20.7893 19.5304 21 19 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V15"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="M17 8L12 3L7 8"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="M12 3V15"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+              Export Shortcuts
+            </button>
+            <button id="import-btn" class="btn-secondary">
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M21 15V19C21 19.5304 20.7893 20.0391 20.4142 20.4142C20.0391 20.7893 19.5304 21 19 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V15"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="M7 10L12 15L17 10"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="M12 15V3"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+              Import Shortcuts
+            </button>
+            <input
+              type="file"
+              id="import-file"
+              accept=".json"
+              style="display: none"
+            />
+          </div>
+
           <div id="alias-list" class="alias-list">
-            <!-- Aliases will be dynamically inserted here -->
+            <!-- Shortcuts will be dynamically inserted here -->
           </div>
         </div>
       </section>
@@ -217,7 +294,7 @@
             <div class="help-content">
               <h3>Create a shortcut</h3>
               <p>
-                Go to "Create New" and add an alias like <code>gmail</code> →
+                Go to "Create New" and add a shortcut like <code>gmail</code> →
                 <code>https://mail.google.com</code>
                 <br />
                 You can also click on the extension icon to quickly add the
