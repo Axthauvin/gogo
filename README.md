@@ -24,30 +24,36 @@ Type **`go`** + **`space`** + **`your-alias`** in the address bar to instantly j
 ### Chrome
 
 1. Open `chrome://extensions/`
-2. Enable "Developer mode"
-3. Click "Load unpacked"
+2. Enable **Developer mode**
+3. Click **Load unpacked**
 4. Select the `dist-chrome` folder
 
-### Firefox via the provided .xpi
+### Firefox
 
-You can install the packaged extension directly using the generated `.xpi` file (this is a ZIP archive with an `.xpi` extension). After a build or from a release artifact you'll have a `gogo-firefox.xpi` file.
+1. Download the file **`gogo-firefox.xpi`** from the latest release.
+2. In Firefox, simply **drag and drop** the `.xpi` file into an open browser window.
+3. Confirm the installation prompt.
 
-Steps:
+That’s it, GoGo is ready to use!
 
-- Download or host `gogo-firefox.xpi` from the last release.
-- In Firefox, either drag-and-drop the `.xpi` file onto a Firefox window, or open the `.xpi` URL directly in the address bar (paste the raw asset URL and press Enter).
-- Follow Firefox's install prompts.
+#### Signature issue
 
-Note about signing: if Firefox blocks installation because the extension is unsigned, you may need to toggle the following (developer-only / unsupported):
+If Firefox blocks installation because the extension is **unsigned**, you can temporarily allow unsigned extensions:
 
-1. Open [about:config](about:config) in Firefox
-2. Search for [xpinstall.signatures.required](xpinstall.signatures.required)
+1. Open a new tab and visit `about:config`
+2. Search for the preference: `xpinstall.signatures.required`
 3. Set it to `false`
+4. Try installing the `.xpi` file again (drag-and-drop or open the file in Firefox)
 
-> ⚠️ Warning: disabling signature checks reduces extension security and is not recommended for everyday browsing. Prefer installing signed extensions from official channels when available.
+> ⚠️ **Warning:** disabling signature checks lowers your browser’s security.  
+> Only do this for local testing or development. Prefer official signed versions whenever possible.
+
+---
 
 ## Build
 
 ```bash
 node build.js all
 ```
+
+Made with ❤️ by Axel
