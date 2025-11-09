@@ -25,6 +25,16 @@ jobs:
       - name: Build extensions
         run: node build.js all
 
+      - name: Update manifest versions
+        if: startsWith(github.ref, 'refs/tags/')
+        run: |
+          # Extract version from tag (e.g., v2.1.0 -> 2.1.0)
+          VERSION=${GITHUB_REF#refs/tags/v}
+          echo "Updating manifests to version $VERSION"
+          # Update version in both manifests
+          sed -i "s/\"version\": \"[^\"]*\"/\"version\": \"$VERSION\"/" dist-chrome/manifest.json
+          sed -i "s/\"version\": \"[^\"]*\"/\"version\": \"$VERSION\"/" dist-firefox/manifest.json
+
       - name: Create Chrome zip
         run: |
           cd dist-chrome
