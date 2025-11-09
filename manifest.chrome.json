@@ -1,6 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Gogo - Local URL Shortener",
+  "author": "Axel Thauvin",
   "version": "1.0",
   "description": "Local url shortener to go faster on the internet.",
   "permissions": ["tabs", "webNavigation", "storage"],
