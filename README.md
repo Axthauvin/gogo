@@ -1,4 +1,3 @@
-````markdown
 # GoGo
 
 A browser extension that lets you create custom shortcuts to your favorite websites.
@@ -58,4 +57,3 @@ node build.js all
 ```
 
 Made with ❤️ by Axel
-````
