@@ -2,8 +2,29 @@
 const storage =
   (typeof browser !== "undefined" && browser.storage) || chrome.storage;
 
-// Store the index of the shortcut being edited (null if creating new)
+// Store the index of the shortcut being editing (null if creating new)
 let editingIndex = null;
+
+// Helper function to reset the form
+function resetForm() {
+  document.getElementById("alias-form").reset();
+  const submitBtn = document.getElementById("submit-btn");
+  if (submitBtn) {
+    submitBtn.textContent = "Create Shortcut";
+    submitBtn.disabled = false;
+    submitBtn.classList.remove("replace-mode");
+  }
+
+  const duplicateWarning = document.getElementById("duplicate-warning");
+  if (duplicateWarning) {
+    duplicateWarning.style.display = "none";
+  }
+
+  const duplicateUrlEl = document.getElementById("duplicate-url");
+  if (duplicateUrlEl) {
+    duplicateUrlEl.textContent = "";
+  }
+}
 
 // Check if onboarding has been completed
 document.addEventListener("DOMContentLoaded", () => {
@@ -29,6 +50,9 @@ document.addEventListener("DOMContentLoaded", () => {
   // Setup shortcut card listeners
   setupShortcutCards();
 
+  // Setup duplicate detection
+  setupDuplicateDetection();
+
   const navItems = document.querySelectorAll(".nav-item");
   const sections = document.querySelectorAll(".section");
 
@@ -49,19 +73,17 @@ document.addEventListener("DOMContentLoaded", () => {
       // Reset editing state when switching sections
       if (targetSection !== "create") {
         editingIndex = null;
-        const submitBtn = document.querySelector(
-          '#alias-form button[type="submit"]'
-        );
-        if (submitBtn) {
-          submitBtn.textContent = "Create Shortcut";
-          // Clear form
-          document.getElementById("alias-form").reset();
-        }
+        resetForm();
       }
 
       // Reload aliases if switching to list view
       if (targetSection === "list") {
         loadAliases();
+      }
+
+      // Load options if switching to options view
+      if (targetSection === "options") {
+        loadOptions();
       }
     });
   });
@@ -70,7 +92,170 @@ document.addEventListener("DOMContentLoaded", () => {
   handleQueryParams();
   setupExportImport();
   setupSearch();
+  setupOptions();
+  setupAutoSuggest();
 });
+
+// Setup duplicate detection
+function setupDuplicateDetection() {
+  const aliasNameInput = document.getElementById("alias-name");
+  const duplicateWarning = document.getElementById("duplicate-warning");
+  const submitBtn = document.getElementById("submit-btn");
+
+  if (!aliasNameInput || !duplicateWarning || !submitBtn) return;
+
+  aliasNameInput.addEventListener("input", () => {
+    checkForDuplicate();
+  });
+}
+
+// Check if the entered alias name already exists
+function checkForDuplicate() {
+  const aliasNameInput = document.getElementById("alias-name");
+  const duplicateWarning = document.getElementById("duplicate-warning");
+  const duplicateUrlEl = document.getElementById("duplicate-url");
+  const submitBtn = document.getElementById("submit-btn");
+
+  if (!aliasNameInput || !duplicateWarning || !submitBtn || !duplicateUrlEl)
+    return;
+
+  const aliasName = aliasNameInput.value.trim().toLowerCase();
+
+  if (!aliasName) {
+    duplicateWarning.style.display = "none";
+    submitBtn.disabled = false;
+    submitBtn.classList.remove("replace-mode");
+    // Reset button text based on editing state
+    submitBtn.textContent =
+      editingIndex !== null ? "Update Shortcut" : "Create Shortcut";
+    return;
+  }
+
+  storage.local.get("aliases").then((data) => {
+    const items = data.aliases || [];
+
+    // Find duplicate (excluding the one being edited)
+    let duplicateItem = null;
+    for (let i = 0; i < items.length; i++) {
+      if (editingIndex !== null && i === editingIndex) {
+        continue;
+      }
+      if (items[i].alias === aliasName) {
+        duplicateItem = items[i];
+        break;
+      }
+    }
+
+    if (duplicateItem) {
+      duplicateWarning.style.display = "flex";
+      duplicateUrlEl.textContent = `Current URL: ${duplicateItem.url}`;
+      submitBtn.disabled = false;
+      submitBtn.classList.add("replace-mode");
+      submitBtn.textContent = "Replace Anyway";
+    } else {
+      duplicateWarning.style.display = "none";
+      duplicateUrlEl.textContent = "";
+      submitBtn.disabled = false;
+      submitBtn.classList.remove("replace-mode");
+      // Reset button text based on editing state
+      submitBtn.textContent =
+        editingIndex !== null ? "Update Shortcut" : "Create Shortcut";
+    }
+  });
+}
+
+// Setup auto-suggest functionality
+function setupAutoSuggest() {
+  const autoSuggestBtn = document.getElementById("auto-suggest-btn");
+  const urlInput = document.getElementById("alias-url");
+  const nameInput = document.getElementById("alias-name");
+
+  if (!autoSuggestBtn) return;
+
+  autoSuggestBtn.addEventListener("click", () => {
+    const url = urlInput.value.trim();
+    if (!url) {
+      showToast("Please enter a URL first", "info");
+      urlInput.focus();
+      return;
+    }
+
+    const suggestion = generateShortcutName(url);
+    if (suggestion) {
+      nameInput.value = suggestion;
+      nameInput.focus();
+      nameInput.select();
+      showToast(`Suggested: "${suggestion}"`, "success");
+      checkForDuplicate();
+    } else {
+      showToast("Could not generate a suggestion from this URL", "info");
+    }
+  });
+}
+
+// Generate a smart shortcut name from URL
+function generateShortcutName(url) {
+  try {
+    // Handle URLs without protocol
+    if (!url.startsWith("http://") && !url.startsWith("https://")) {
+      url = "https://" + url;
+    }
+
+    const urlObj = new URL(url);
+    const hostname = urlObj.hostname;
+
+    // Remove www. prefix
+    const domain = hostname.replace(/^www\./, "");
+
+    // Extract the main part of the domain (before .com, .org, etc.)
+    const parts = domain.split(".");
+
+    // If it's a simple domain like "google.com"
+    if (parts.length >= 2) {
+      const mainPart = parts[0];
+
+      // Common mappings for popular sites
+      const commonMappings = {
+        github: "git",
+        youtube: "yt",
+        stackoverflow: "so",
+        facebook: "fb",
+        instagram: "ig",
+        twitter: "tw",
+        linkedin: "li",
+        wikipedia: "wiki",
+        amazon: "amz",
+        reddit: "reddit",
+        gmail: "gmail",
+        "mail.google": "gmail",
+      };
+
+      // Check if there's a common mapping
+      if (commonMappings[mainPart]) {
+        return commonMappings[mainPart];
+      }
+
+      // For longer names, create an abbreviation
+      if (mainPart.length > 8) {
+        // Try to create an acronym from capital letters or vowels
+        const consonants = mainPart.replace(/[aeiou]/gi, "");
+        if (consonants.length >= 2 && consonants.length <= 5) {
+          return consonants.toLowerCase().substring(0, 5);
+        }
+        // Otherwise just truncate
+        return mainPart.substring(0, 6).toLowerCase();
+      }
+
+      // Return the main part as-is if it's short enough
+      return mainPart.toLowerCase();
+    }
+
+    return null;
+  } catch (error) {
+    console.error("Error generating shortcut name:", error);
+    return null;
+  }
+}
 
 // Setup export/import functionality
 function setupExportImport() {
@@ -318,8 +503,18 @@ function displayShortcuts(items, useOriginalIndex = false) {
   document.querySelectorAll(".delete-btn").forEach((btn) => {
     btn.addEventListener("click", (e) => {
       e.stopPropagation(); // Prevent triggering the item click
-      const index = parseInt(e.target.getAttribute("data-index"));
-      deleteAlias(index);
+      const btnEl = e.currentTarget;
+      const indexStr = btnEl.getAttribute("data-index");
+      const index = parseInt(indexStr, 10);
+      if (isNaN(index)) {
+        const idxFallback = parseInt(btnEl.dataset.index, 10);
+        if (isNaN(idxFallback)) {
+          return;
+        }
+        deleteAlias(idxFallback);
+      } else {
+        deleteAlias(index);
+      }
     });
   });
 }
@@ -356,24 +551,54 @@ function editAlias(index) {
       editingIndex = index;
 
       // Update button text to indicate editing
-      const submitBtn = document.querySelector(
-        '#alias-form button[type="submit"]'
-      );
+      const submitBtn = document.getElementById("submit-btn");
       submitBtn.textContent = "Update Shortcut";
+
+      // Check for duplicates (will be fine since we're editing)
+      checkForDuplicate();
     }
   });
 }
 
 // Delete alias
 function deleteAlias(index, shouldReload = true) {
-  storage.local.get("aliases").then((data) => {
+  storage.local.get(["aliases", "options"]).then((data) => {
     const items = data.aliases || [];
-    items.splice(index, 1);
-    storage.local.set({ aliases: items }).then(() => {
-      if (shouldReload) {
-        loadAliases();
-      }
-    });
+    const options = data.options || { confirmDelete: true };
+
+    const aliasToDelete = items[index];
+
+    // Show confirmation dialog if enabled
+    if (options.confirmDelete) {
+      modal.show({
+        title: "Delete Shortcut",
+        subtitle: "This action cannot be undone",
+        message: `Are you sure you want to delete <span class="modal-highlight">${escapeHtml(
+          aliasToDelete.alias
+        )}</span>?`,
+        confirmText: "Delete",
+        cancelText: "Cancel",
+        type: "danger",
+        onConfirm: () => {
+          items.splice(index, 1);
+          storage.local.set({ aliases: items }).then(() => {
+            if (shouldReload) {
+              loadAliases();
+              showToast(`Shortcut "${aliasToDelete.alias}" deleted!`);
+            }
+          });
+        },
+      });
+    } else {
+      // Delete immediately without confirmation
+      items.splice(index, 1);
+      storage.local.set({ aliases: items }).then(() => {
+        if (shouldReload) {
+          loadAliases();
+          showToast(`Shortcut "${aliasToDelete.alias}" deleted!`);
+        }
+      });
+    }
   });
 }
 
@@ -406,10 +631,59 @@ function handleQueryParams() {
 // Save new alias
 document.getElementById("alias-form").addEventListener("submit", (e) => {
   e.preventDefault();
-  const alias = document.getElementById("alias-name").value;
-  const url = document.getElementById("alias-url").value;
+  const alias = document
+    .getElementById("alias-name")
+    .value.trim()
+    .toLowerCase();
+  const url = document.getElementById("alias-url").value.trim();
+  const submitBtn = document.getElementById("submit-btn");
+
   storage.local.get("aliases").then((data) => {
     const items = data.aliases || [];
+
+    // Find if duplicate exists (excluding the one being edited)
+    let duplicateIndex = -1;
+    for (let i = 0; i < items.length; i++) {
+      if (editingIndex !== null && i === editingIndex) {
+        continue;
+      }
+      if (items[i].alias === alias) {
+        duplicateIndex = i;
+        break;
+      }
+    }
+
+    // If duplicate exists and button is in "Replace Anyway" mode, replace it
+    if (duplicateIndex !== -1) {
+      if (submitBtn.classList.contains("replace-mode")) {
+        // Replace the existing shortcut
+        items[duplicateIndex] = {
+          alias: alias,
+          url: url.toLowerCase(),
+        };
+
+        // If we were editing a different shortcut, also remove that one
+        if (editingIndex !== null && editingIndex !== duplicateIndex) {
+          // Adjust index if needed
+          const indexToRemove =
+            editingIndex > duplicateIndex ? editingIndex : editingIndex;
+          items.splice(indexToRemove, 1);
+        }
+
+        editingIndex = null;
+
+        storage.local.set({ aliases: items }).then(() => {
+          loadAliases();
+          showToast(`Shortcut "${alias}" replaced!`);
+          resetForm();
+        });
+        return;
+      } else {
+        // This shouldn't happen but just in case
+        showToast(`Shortcut "${alias}" already exists!`, "info");
+        return;
+      }
+    }
 
     // If editing, delete the old one first
     if (editingIndex !== null) {
@@ -418,29 +692,23 @@ document.getElementById("alias-form").addEventListener("submit", (e) => {
     }
 
     items.push({
-      alias: alias.trim().toLowerCase(),
-      url: url.trim().toLowerCase(),
+      alias: alias,
+      url: url.toLowerCase(),
     });
     storage.local.set({ aliases: items }).then(() => {
       loadAliases();
       showToast(`Shortcut "${alias}" saved!`);
-      // Clear form
-      document.getElementById("alias-form").reset();
-
-      // Reset button text
-      const submitBtn = document.querySelector(
-        '#alias-form button[type="submit"]'
-      );
-      submitBtn.textContent = "Create Shortcut";
+      resetForm();
     });
   });
 });
 
 // Toast notification
-function showToast(message) {
+function showToast(message, type = "success") {
   const toast = document.getElementById("toast");
 
-  toast.querySelector(".toast-title").textContent = "Success";
+  const title = type === "info" ? "Info" : "Success";
+  toast.querySelector(".toast-title").textContent = title;
   toast.querySelector(".toast-message").textContent = message;
   toast.classList.add("show");
 
@@ -455,4 +723,238 @@ function readAskCreation() {
   const created = params.get("create");
   console.log("Asked creation for alias:", created);
   return created;
+}
+
+// ===== OPTIONS FUNCTIONALITY =====
+
+// Reusable Modal System
+const modal = {
+  overlay: null,
+  onConfirm: null,
+
+  init() {
+    this.overlay = document.getElementById("modal-overlay");
+    const cancelBtn = document.getElementById("modal-cancel");
+    const confirmBtn = document.getElementById("modal-confirm");
+
+    // Close on overlay click
+    this.overlay.addEventListener("click", (e) => {
+      if (e.target === this.overlay) {
+        this.close();
+      }
+    });
+
+    // Close on cancel
+    cancelBtn.addEventListener("click", () => this.close());
+
+    // Confirm action
+    confirmBtn.addEventListener("click", () => {
+      const callback = this.onConfirm;
+      this.onConfirm = null;
+      this.close();
+
+      // Execute callback after closing to allow chaining modals
+      if (callback) {
+        setTimeout(() => callback(), 100);
+      }
+    });
+
+    // ESC key to close
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && this.overlay.classList.contains("show")) {
+        this.close();
+      }
+    });
+  },
+
+  show({
+    title,
+    subtitle = "",
+    message,
+    confirmText = "Confirm",
+    cancelText = "Cancel",
+    type = "danger", // 'danger', 'warning', 'info', 'success'
+    onConfirm,
+  }) {
+    this.onConfirm = onConfirm;
+
+    // Set content
+    document.getElementById("modal-title").textContent = title;
+    document.getElementById("modal-subtitle").textContent = subtitle;
+    document.getElementById("modal-message").innerHTML = message;
+    document.getElementById("modal-confirm").textContent = confirmText;
+    document.getElementById("modal-cancel").textContent = cancelText;
+
+    // Set icon based on type
+    const iconContainer = document.getElementById("modal-icon");
+    const iconSvg = document.getElementById("modal-icon-svg");
+    const confirmBtn = document.getElementById("modal-confirm");
+
+    // Remove all type classes
+    iconContainer.className = "modal-icon";
+    confirmBtn.className = "modal-btn modal-btn-confirm";
+
+    // Add type class
+    iconContainer.classList.add(type);
+    confirmBtn.classList.add(type);
+
+    // Set icon SVG
+    const icons = {
+      danger:
+        '<path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM13 17H11V15H13V17ZM13 13H11V7H13V13Z" fill="currentColor"/>',
+      warning:
+        '<path d="M1 21H23L12 2L1 21ZM13 18H11V16H13V18ZM13 14H11V10H13V14Z" fill="currentColor"/>',
+      info: '<path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM13 17H11V11H13V17ZM13 9H11V7H13V9Z" fill="currentColor"/>',
+      success:
+        '<path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM10 17L5 12L6.41 10.59L10 14.17L17.59 6.58L19 8L10 17Z" fill="currentColor"/>',
+    };
+
+    iconSvg.innerHTML = icons[type] || icons.info;
+
+    // Show modal
+    this.overlay.classList.add("show");
+  },
+
+  close() {
+    this.overlay.classList.remove("show");
+    this.onConfirm = null;
+  },
+};
+
+// Setup options functionality
+function setupOptions() {
+  // Initialize modal
+  modal.init();
+
+  // Tab behavior radio buttons
+  const tabBehaviorRadios = document.querySelectorAll(
+    'input[name="tab-behavior"]'
+  );
+  tabBehaviorRadios.forEach((radio) => {
+    radio.addEventListener("change", (e) => {
+      saveOption("tabBehavior", e.target.value);
+      showToast("Tab behavior updated!");
+    });
+  });
+
+  // Autocomplete toggle
+  const autocompleteCheckbox = document.getElementById("enable-autocomplete");
+  if (autocompleteCheckbox) {
+    autocompleteCheckbox.addEventListener("change", (e) => {
+      saveOption("enableAutocomplete", e.target.checked);
+      showToast(
+        e.target.checked ? "Autocomplete enabled" : "Autocomplete disabled"
+      );
+    });
+  }
+
+  // Delete confirmation toggle
+  const confirmDeleteCheckbox = document.getElementById("confirm-delete");
+  if (confirmDeleteCheckbox) {
+    confirmDeleteCheckbox.addEventListener("change", (e) => {
+      saveOption("confirmDelete", e.target.checked);
+      showToast(
+        e.target.checked
+          ? "Delete confirmation enabled"
+          : "Delete confirmation disabled"
+      );
+    });
+  }
+
+  // Clear all data button
+  const clearAllBtn = document.getElementById("clear-all-btn");
+  if (clearAllBtn) {
+    clearAllBtn.addEventListener("click", clearAllData);
+  }
+}
+
+// Load options from storage and update UI
+function loadOptions() {
+  storage.local.get("options").then((data) => {
+    const options = data.options || {
+      tabBehavior: "newTab",
+      confirmDelete: true,
+      enableAutocomplete: true,
+    };
+
+    // Update tab behavior radio buttons
+    const tabBehaviorRadio = document.querySelector(
+      `input[name="tab-behavior"][value="${options.tabBehavior}"]`
+    );
+    if (tabBehaviorRadio) {
+      tabBehaviorRadio.checked = true;
+    }
+
+    // Update autocomplete checkbox
+    const autocompleteCheckbox = document.getElementById("enable-autocomplete");
+    if (autocompleteCheckbox) {
+      autocompleteCheckbox.checked = options.enableAutocomplete !== false; // Default to true
+    }
+
+    // Update confirm delete checkbox
+    const confirmDeleteCheckbox = document.getElementById("confirm-delete");
+    if (confirmDeleteCheckbox) {
+      confirmDeleteCheckbox.checked = options.confirmDelete;
+    }
+  });
+}
+
+// Save individual option
+function saveOption(key, value) {
+  storage.local.get("options").then((data) => {
+    const options = data.options || {};
+    options[key] = value;
+    storage.local.set({ options: options });
+  });
+}
+
+// Clear all data
+function clearAllData() {
+  modal.show({
+    title: "⚠️ Clear All Data",
+    subtitle: "This will delete everything",
+    message:
+      "This will permanently delete <strong>ALL</strong> your shortcuts and reset <strong>ALL</strong> settings to default.<br><br>This action <strong>cannot be undone</strong>.",
+    confirmText: "Yes, Clear Everything",
+    cancelText: "Cancel",
+    type: "danger",
+    onConfirm: () => {
+      // Show second confirmation
+      modal.show({
+        title: "Are You Absolutely Sure?",
+        subtitle: "Last chance to cancel",
+        message:
+          "Click <strong>Confirm</strong> to permanently delete all data, or <strong>Cancel</strong> to keep everything.",
+        confirmText: "Confirm",
+        cancelText: "Cancel",
+        type: "warning",
+        onConfirm: () => {
+          console.log("Clearing all data...");
+          // Clear all storage except onboarding status
+          storage.local.get("onboardingCompleted").then((data) => {
+            const onboardingCompleted = data.onboardingCompleted || false;
+            console.log("Onboarding completed status:", onboardingCompleted);
+
+            storage.local.clear().then(() => {
+              // Restore onboarding status
+              storage.local
+                .set({
+                  onboardingCompleted: onboardingCompleted,
+                  options: {
+                    tabBehavior: "newTab",
+                    confirmDelete: true,
+                    enableAutocomplete: true,
+                  },
+                })
+                .then(() => {
+                  showToast("All data cleared!");
+                  loadAliases();
+                  loadOptions();
+                });
+            });
+          });
+        },
+      });
+    },
+  });
 }
