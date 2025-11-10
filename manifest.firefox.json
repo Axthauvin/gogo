@@ -1,9 +1,9 @@
 {
   "manifest_version": 2,
-  "name": "Gogo - Local URL Shortener",
+  "name": "GoGo – Your Shortcut Engine for the Web",
   "author": "Axel Thauvin",
   "version": "1.0",
-  "description": "Local url shortener to go faster on the internet.",
+  "description": "Create custom shortcuts for your favorite sites. Jump anywhere instantly, with all data stored locally.",
   "permissions": ["tabs", "webNavigation", "storage", "<all_urls>"],
   "background": {
     "scripts": ["src/background.js"],
