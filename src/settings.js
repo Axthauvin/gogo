@@ -396,6 +396,26 @@ function filterShortcuts(query) {
   });
 }
 
+// Helper function to create SVG icon elements
+function createSvgIcon(width, height, viewBox, paths) {
+  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svg.setAttribute("width", width);
+  svg.setAttribute("height", height);
+  svg.setAttribute("viewBox", viewBox);
+  svg.setAttribute("fill", "none");
+  svg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+
+  paths.forEach((pathData) => {
+    const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    Object.keys(pathData).forEach((attr) => {
+      path.setAttribute(attr, pathData[attr]);
+    });
+    svg.appendChild(path);
+  });
+
+  return svg;
+}
+
 // Display shortcuts (used by both loadAliases and filterShortcuts)
 function displayShortcuts(items, useOriginalIndex = false) {
   const aliasList = document.getElementById("alias-list");
@@ -405,31 +425,62 @@ function displayShortcuts(items, useOriginalIndex = false) {
     const searchInput = document.getElementById("search-input");
     const isSearching = searchInput && searchInput.value.trim() !== "";
 
-    aliasList.innerHTML = `
-      <div class="empty-state">
-        <div class="empty-icon">
-          <img src="./icons/list.svg" width="80" height="80" alt="No shortcuts" />
-        </div>
-        <div class="empty-text">${
-          isSearching ? "No shortcuts found" : "No shortcuts yet"
-        }</div>
-        <div class="empty-subtext">${
-          isSearching
-            ? "Try adjusting your search terms to find what you're looking for."
-            : "Create your first shortcut to quickly jump to your favorite websites."
-        }</div>
-        ${
-          !isSearching
-            ? `<button class="empty-action" id="create-first-shortcut">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-                Create Your First Shortcut
-              </button>`
-            : ""
-        }
-      </div>
-    `;
+    // Create empty state container
+    const emptyState = document.createElement("div");
+    emptyState.className = "empty-state";
+
+    const emptyIcon = document.createElement("div");
+    emptyIcon.className = "empty-icon";
+    const img = document.createElement("img");
+    img.src = "./icons/list.svg";
+    img.width = 80;
+    img.height = 80;
+    img.alt = "No shortcuts";
+    emptyIcon.appendChild(img);
+
+    const emptyText = document.createElement("div");
+    emptyText.className = "empty-text";
+    emptyText.textContent = isSearching
+      ? "No shortcuts found"
+      : "No shortcuts yet";
+
+    const emptySubtext = document.createElement("div");
+    emptySubtext.className = "empty-subtext";
+    emptySubtext.textContent = isSearching
+      ? "Try adjusting your search terms to find what you're looking for."
+      : "Create your first shortcut to quickly jump to your favorite websites.";
+
+    emptyState.appendChild(emptyIcon);
+    emptyState.appendChild(emptyText);
+    emptyState.appendChild(emptySubtext);
+
+    if (!isSearching) {
+      const button = document.createElement("button");
+      button.className = "empty-action";
+      button.id = "create-first-shortcut";
+      const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+      svg.setAttribute("width", "16");
+      svg.setAttribute("height", "16");
+      svg.setAttribute("viewBox", "0 0 24 24");
+      svg.setAttribute("fill", "none");
+      const path = document.createElementNS(
+        "http://www.w3.org/2000/svg",
+        "path"
+      );
+      path.setAttribute("d", "M12 5V19M5 12H19");
+      path.setAttribute("stroke", "currentColor");
+      path.setAttribute("stroke-width", "2");
+      path.setAttribute("stroke-linecap", "round");
+      path.setAttribute("stroke-linejoin", "round");
+      svg.appendChild(path);
+      button.appendChild(svg);
+      button.appendChild(
+        document.createTextNode(" Create Your First Shortcut")
+      );
+      emptyState.appendChild(button);
+    }
+
+    aliasList.appendChild(emptyState);
 
     // Add event listener for the button if it exists
     if (!isSearching) {
@@ -451,28 +502,94 @@ function displayShortcuts(items, useOriginalIndex = false) {
     const aliasItem = document.createElement("div");
     aliasItem.className = "alias-item";
     aliasItem.setAttribute("data-url", url);
-    aliasItem.innerHTML = `
-      <div class="alias-info">
-        <div class="alias-name">${escapeHtml(alias)}</div>
-        <div class="alias-target">${escapeHtml(url)}</div>
-      </div>
-      <div class="alias-actions">
-        <button class="action-btn edit-btn" data-index="${dataIndex}" title="Edit">
-          <svg width="16px" height="16px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M21.2799 6.40005L11.7399 15.94C10.7899 16.89 7.96987 17.33 7.33987 16.7C6.70987 16.07 7.13987 13.25 8.08987 12.3L17.6399 2.75002C17.8754 2.49308 18.1605 2.28654 18.4781 2.14284C18.7956 1.99914 19.139 1.92124 19.4875 1.9139C19.8359 1.90657 20.1823 1.96991 20.5056 2.10012C20.8289 2.23033 21.1225 2.42473 21.3686 2.67153C21.6147 2.91833 21.8083 3.21243 21.9376 3.53609C22.0669 3.85976 22.1294 4.20626 22.1211 4.55471C22.1128 4.90316 22.0339 5.24635 21.8894 5.5635C21.7448 5.88065 21.5375 6.16524 21.2799 6.40005V6.40005Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M11 4H6C4.93913 4 3.92178 4.42142 3.17163 5.17157C2.42149 5.92172 2 6.93913 2 8V18C2 19.0609 2.42149 20.0783 3.17163 20.8284C3.92178 21.5786 4.93913 22 6 22H17C19.21 22 20 20.2 20 18V13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </button>
-        <button class="action-btn delete-btn" data-index="${dataIndex}" title="Delete">
-          <svg width="16px" height="16px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M3 6.98996C8.81444 4.87965 15.1856 4.87965 21 6.98996" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M8.00977 5.71997C8.00977 4.6591 8.43119 3.64175 9.18134 2.8916C9.93148 2.14146 10.9489 1.71997 12.0098 1.71997C13.0706 1.71997 14.0881 2.14146 14.8382 2.8916C15.5883 3.64175 16.0098 4.6591 16.0098 5.71997" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M12 13V18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M19 9.98999L18.33 17.99C18.2225 19.071 17.7225 20.0751 16.9246 20.8123C16.1266 21.5494 15.0861 21.9684 14 21.99H10C8.91389 21.9684 7.87336 21.5494 7.07541 20.8123C6.27745 20.0751 5.77745 19.071 5.67001 17.99L5 9.98999" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </button>
-      </div>
-    `;
+
+    // Create alias info section
+    const aliasInfo = document.createElement("div");
+    aliasInfo.className = "alias-info";
+
+    const aliasName = document.createElement("div");
+    aliasName.className = "alias-name";
+    aliasName.textContent = alias;
+
+    const aliasTarget = document.createElement("div");
+    aliasTarget.className = "alias-target";
+    aliasTarget.textContent = url;
+
+    aliasInfo.appendChild(aliasName);
+    aliasInfo.appendChild(aliasTarget);
+
+    // Create alias actions section
+    const aliasActions = document.createElement("div");
+    aliasActions.className = "alias-actions";
+
+    // Create edit button
+    const editBtn = document.createElement("button");
+    editBtn.className = "action-btn edit-btn";
+    editBtn.setAttribute("data-index", dataIndex);
+    editBtn.setAttribute("title", "Edit");
+
+    const editIcon = createSvgIcon("16px", "16px", "0 0 24 24", [
+      {
+        d: "M21.2799 6.40005L11.7399 15.94C10.7899 16.89 7.96987 17.33 7.33987 16.7C6.70987 16.07 7.13987 13.25 8.08987 12.3L17.6399 2.75002C17.8754 2.49308 18.1605 2.28654 18.4781 2.14284C18.7956 1.99914 19.139 1.92124 19.4875 1.9139C19.8359 1.90657 20.1823 1.96991 20.5056 2.10012C20.8289 2.23033 21.1225 2.42473 21.3686 2.67153C21.6147 2.91833 21.8083 3.21243 21.9376 3.53609C22.0669 3.85976 22.1294 4.20626 22.1211 4.55471C22.1128 4.90316 22.0339 5.24635 21.8894 5.5635C21.7448 5.88065 21.5375 6.16524 21.2799 6.40005V6.40005Z",
+        stroke: "currentColor",
+        "stroke-width": "1.5",
+        "stroke-linecap": "round",
+        "stroke-linejoin": "round",
+      },
+      {
+        d: "M11 4H6C4.93913 4 3.92178 4.42142 3.17163 5.17157C2.42149 5.92172 2 6.93913 2 8V18C2 19.0609 2.42149 20.0783 3.17163 20.8284C3.92178 21.5786 4.93913 22 6 22H17C19.21 22 20 20.2 20 18V13",
+        stroke: "currentColor",
+        "stroke-width": "1.5",
+        "stroke-linecap": "round",
+        "stroke-linejoin": "round",
+      },
+    ]);
+    editBtn.appendChild(editIcon);
+
+    // Create delete button
+    const deleteBtn = document.createElement("button");
+    deleteBtn.className = "action-btn delete-btn";
+    deleteBtn.setAttribute("data-index", dataIndex);
+    deleteBtn.setAttribute("title", "Delete");
+
+    const deleteIcon = createSvgIcon("16px", "16px", "0 0 24 24", [
+      {
+        d: "M3 6.98996C8.81444 4.87965 15.1856 4.87965 21 6.98996",
+        stroke: "currentColor",
+        "stroke-width": "1.5",
+        "stroke-linecap": "round",
+        "stroke-linejoin": "round",
+      },
+      {
+        d: "M8.00977 5.71997C8.00977 4.6591 8.43119 3.64175 9.18134 2.8916C9.93148 2.14146 10.9489 1.71997 12.0098 1.71997C13.0706 1.71997 14.0881 2.14146 14.8382 2.8916C15.5883 3.64175 16.0098 4.6591 16.0098 5.71997",
+        stroke: "currentColor",
+        "stroke-width": "1.5",
+        "stroke-linecap": "round",
+        "stroke-linejoin": "round",
+      },
+      {
+        d: "M12 13V18",
+        stroke: "currentColor",
+        "stroke-width": "1.5",
+        "stroke-linecap": "round",
+        "stroke-linejoin": "round",
+      },
+      {
+        d: "M19 9.98999L18.33 17.99C18.2225 19.071 17.7225 20.0751 16.9246 20.8123C16.1266 21.5494 15.0861 21.9684 14 21.99H10C8.91389 21.9684 7.87336 21.5494 7.07541 20.8123C6.27745 20.0751 5.77745 19.071 5.67001 17.99L5 9.98999",
+        stroke: "currentColor",
+        "stroke-width": "1.5",
+        "stroke-linecap": "round",
+        "stroke-linejoin": "round",
+      },
+    ]);
+    deleteBtn.appendChild(deleteIcon);
+
+    aliasActions.appendChild(editBtn);
+    aliasActions.appendChild(deleteBtn);
+
+    aliasItem.appendChild(aliasInfo);
+    aliasItem.appendChild(aliasActions);
+
     aliasList.appendChild(aliasItem);
   });
 
@@ -570,12 +687,21 @@ function deleteAlias(index, shouldReload = true) {
 
     // Show confirmation dialog if enabled
     if (options.confirmDelete) {
+      // Create message with highlighted alias name
+      const messageEl = document.createElement("span");
+      messageEl.textContent = "Are you sure you want to delete ";
+
+      const highlightEl = document.createElement("span");
+      highlightEl.className = "modal-highlight";
+      highlightEl.textContent = aliasToDelete.alias;
+
+      messageEl.appendChild(highlightEl);
+      messageEl.appendChild(document.createTextNode("?"));
+
       modal.show({
         title: "Delete Shortcut",
         subtitle: "This action cannot be undone",
-        message: `Are you sure you want to delete <span class="modal-highlight">${escapeHtml(
-          aliasToDelete.alias
-        )}</span>?`,
+        message: messageEl,
         confirmText: "Delete",
         cancelText: "Cancel",
         type: "danger",
@@ -781,7 +907,20 @@ const modal = {
     // Set content
     document.getElementById("modal-title").textContent = title;
     document.getElementById("modal-subtitle").textContent = subtitle;
-    document.getElementById("modal-message").innerHTML = message;
+
+    // Safely set message content
+    const modalMessage = document.getElementById("modal-message");
+    modalMessage.textContent = ""; // Clear existing content
+
+    // If message is a string, check if it needs to be parsed as DOM elements
+    if (typeof message === "string") {
+      // For security, we'll only allow text content or use a safe wrapper
+      modalMessage.textContent = message.replace(/<[^>]*>/g, ""); // Strip HTML tags for security
+    } else if (message instanceof HTMLElement) {
+      // If message is already a DOM element, append it
+      modalMessage.appendChild(message);
+    }
+
     document.getElementById("modal-confirm").textContent = confirmText;
     document.getElementById("modal-cancel").textContent = cancelText;
 
@@ -800,16 +939,30 @@ const modal = {
 
     // Set icon SVG
     const icons = {
-      danger:
-        '<path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM13 17H11V15H13V17ZM13 13H11V7H13V13Z" fill="currentColor"/>',
-      warning:
-        '<path d="M1 21H23L12 2L1 21ZM13 18H11V16H13V18ZM13 14H11V10H13V14Z" fill="currentColor"/>',
-      info: '<path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM13 17H11V11H13V17ZM13 9H11V7H13V9Z" fill="currentColor"/>',
-      success:
-        '<path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM10 17L5 12L6.41 10.59L10 14.17L17.59 6.58L19 8L10 17Z" fill="currentColor"/>',
+      danger: {
+        d: "M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM13 17H11V15H13V17ZM13 13H11V7H13V13Z",
+      },
+      warning: {
+        d: "M1 21H23L12 2L1 21ZM13 18H11V16H13V18ZM13 14H11V10H13V14Z",
+      },
+      info: {
+        d: "M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM13 17H11V11H13V17ZM13 9H11V7H13V9Z",
+      },
+      success: {
+        d: "M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM10 17L5 12L6.41 10.59L10 14.17L17.59 6.58L19 8L10 17Z",
+      },
     };
 
-    iconSvg.innerHTML = icons[type] || icons.info;
+    // Clear existing SVG content and create new path
+    while (iconSvg.firstChild) {
+      iconSvg.removeChild(iconSvg.firstChild);
+    }
+
+    const iconData = icons[type] || icons.info;
+    const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    path.setAttribute("d", iconData.d);
+    path.setAttribute("fill", "currentColor");
+    iconSvg.appendChild(path);
 
     // Show modal
     this.overlay.classList.add("show");
@@ -910,21 +1063,62 @@ function saveOption(key, value) {
 
 // Clear all data
 function clearAllData() {
+  // Create first message
+  const message1 = document.createElement("div");
+  message1.textContent = "This will permanently delete ";
+
+  const strong1 = document.createElement("strong");
+  strong1.textContent = "ALL";
+  message1.appendChild(strong1);
+
+  message1.appendChild(document.createTextNode(" your shortcuts and reset "));
+
+  const strong2 = document.createElement("strong");
+  strong2.textContent = "ALL";
+  message1.appendChild(strong2);
+
+  message1.appendChild(document.createTextNode(" settings to default."));
+  message1.appendChild(document.createElement("br"));
+  message1.appendChild(document.createElement("br"));
+  message1.appendChild(document.createTextNode("This action "));
+
+  const strong3 = document.createElement("strong");
+  strong3.textContent = "cannot be undone";
+  message1.appendChild(strong3);
+
+  message1.appendChild(document.createTextNode("."));
+
   modal.show({
     title: "⚠️ Clear All Data",
     subtitle: "This will delete everything",
-    message:
-      "This will permanently delete <strong>ALL</strong> your shortcuts and reset <strong>ALL</strong> settings to default.<br><br>This action <strong>cannot be undone</strong>.",
+    message: message1,
     confirmText: "Yes, Clear Everything",
     cancelText: "Cancel",
     type: "danger",
     onConfirm: () => {
+      // Create second message
+      const message2 = document.createElement("div");
+      message2.textContent = "Click ";
+
+      const strong4 = document.createElement("strong");
+      strong4.textContent = "Confirm";
+      message2.appendChild(strong4);
+
+      message2.appendChild(
+        document.createTextNode(" to permanently delete all data, or ")
+      );
+
+      const strong5 = document.createElement("strong");
+      strong5.textContent = "Cancel";
+      message2.appendChild(strong5);
+
+      message2.appendChild(document.createTextNode(" to keep everything."));
+
       // Show second confirmation
       modal.show({
         title: "Are You Absolutely Sure?",
         subtitle: "Last chance to cancel",
-        message:
-          "Click <strong>Confirm</strong> to permanently delete all data, or <strong>Cancel</strong> to keep everything.",
+        message: message2,
         confirmText: "Confirm",
         cancelText: "Cancel",
         type: "warning",
