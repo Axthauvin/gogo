@@ -5,6 +5,49 @@ const storage =
 // Store the index of the shortcut being editing (null if creating new)
 let editingIndex = null;
 
+// Detect system theme preference
+function getSystemTheme() {
+  return window.matchMedia("(prefers-color-scheme: dark)").matches
+    ? "dark"
+    : "light";
+}
+
+// Apply theme based on user preference
+function applyTheme(preference) {
+  const htmlElement = document.documentElement;
+
+  if (preference === "light") {
+    htmlElement.setAttribute("data-theme", "light");
+  } else if (preference === "dark") {
+    htmlElement.setAttribute("data-theme", "dark");
+  } else {
+    // auto - detect system preference
+    const systemTheme = getSystemTheme();
+    htmlElement.setAttribute("data-theme", systemTheme);
+  }
+}
+
+// Listen for system theme changes
+window
+  .matchMedia("(prefers-color-scheme: dark)")
+  .addEventListener("change", (e) => {
+    storage.local.get("options").then((data) => {
+      const options = data.options || {};
+      const themePreference = options.themePreference || "auto";
+      // Only update if user has set to auto
+      if (themePreference === "auto") {
+        applyTheme("auto");
+      }
+    });
+  });
+
+// Initialize theme on page load
+storage.local.get("options").then((data) => {
+  const options = data.options || {};
+  const themePreference = options.themePreference || "auto";
+  applyTheme(themePreference);
+});
+
 // Helper function to reset the form
 function resetForm() {
   document.getElementById("alias-form").reset();
@@ -979,6 +1022,18 @@ function setupOptions() {
   // Initialize modal
   modal.init();
 
+  // Theme preference radio buttons
+  const themeRadios = document.querySelectorAll(
+    'input[name="theme-preference"]'
+  );
+  themeRadios.forEach((radio) => {
+    radio.addEventListener("change", (e) => {
+      saveOption("themePreference", e.target.value);
+      applyTheme(e.target.value);
+      showToast("Theme updated!");
+    });
+  });
+
   // Tab behavior radio buttons
   const tabBehaviorRadios = document.querySelectorAll(
     'input[name="tab-behavior"]'
@@ -1028,7 +1083,21 @@ function loadOptions() {
       tabBehavior: "newTab",
       confirmDelete: true,
       enableAutocomplete: true,
+      themePreference: "auto",
     };
+
+    // Update theme radio buttons
+    const themeRadio = document.querySelector(
+      `input[name="theme-preference"][value="${
+        options.themePreference || "auto"
+      }"]`
+    );
+    if (themeRadio) {
+      themeRadio.checked = true;
+    }
+
+    // Apply the theme
+    applyTheme(options.themePreference || "auto");
 
     // Update tab behavior radio buttons
     const tabBehaviorRadio = document.querySelector(
@@ -1138,6 +1207,7 @@ function clearAllData() {
                     tabBehavior: "newTab",
                     confirmDelete: true,
                     enableAutocomplete: true,
+                    themePreference: "auto",
                   },
                 })
                 .then(() => {

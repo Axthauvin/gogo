@@ -19,9 +19,9 @@
 }
 
 .onboarding-container {
-  background: #ffffff;
+  background: var(--card-bg);
   border-radius: 8px;
-  border: 1px solid #e4e4e7;
+  border: 1px solid var(--border-color);
   padding: 40px;
   max-width: 700px;
   width: 90%;
@@ -44,14 +44,14 @@
   font-size: 30px;
   font-weight: 700;
   letter-spacing: -0.025em;
-  color: #09090b;
+  color: var(--text-primary);
   text-align: center;
   margin-bottom: 16px;
 }
 
 .onboarding-text {
   font-size: 16px;
-  color: #71717a;
+  color: var(--text-secondary);
   line-height: 1.6;
   text-align: left;
   margin-bottom: 32px;
@@ -59,7 +59,7 @@
 
 .onboarding-subtext {
   font-size: 14px;
-  color: #a1a1aa;
+  color: var(--text-tertiary);
   text-align: center;
   margin-top: 16px;
   margin-bottom: 32px;
@@ -70,8 +70,8 @@
   padding: 10px 16px;
   font-size: 14px;
   font-weight: 500;
-  color: #fafafa;
-  background: #09090b;
+  color: var(--bg-primary);
+  background: var(--text-primary);
   border: none;
   border-radius: 6px;
   cursor: pointer;
@@ -79,7 +79,7 @@
 }
 
 .btn-onboarding:hover:not(:disabled) {
-  background: #18181b;
+  opacity: 0.85;
 }
 
 .btn-onboarding:active:not(:disabled) {
@@ -87,8 +87,8 @@
 }
 
 .btn-onboarding:disabled {
-  background: #e4e4e7;
-  color: #a1a1aa;
+  background: var(--border-color);
+  color: var(--text-tertiary);
   cursor: not-allowed;
 }
 
@@ -101,23 +101,23 @@
 }
 
 .shortcut-card {
-  background: #ffffff;
-  border: 1px solid #e4e4e7;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
   border-radius: 8px;
   padding: 20px 16px;
   text-align: center;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  box-shadow: 0 1px 2px 0 var(--shadow-sm);
 }
 
 .shortcut-card:hover {
-  background: #fafafa;
-  border-color: #09090b;
+  background: var(--bg-secondary);
+  border-color: var(--text-primary);
   transform: translateY(-4px) scale(1.02);
-  box-shadow: 0 12px 24px -10px rgba(0, 0, 0, 0.15),
-    0 4px 8px -4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 12px 24px -10px var(--shadow-lg),
+    0 4px 8px -4px var(--shadow-md);
 }
 
 .shortcut-card:hover .shortcut-emoji {
@@ -125,7 +125,7 @@
 }
 
 .shortcut-card:hover .shortcut-name {
-  color: #09090b;
+  color: var(--text-primary);
   font-weight: 700;
 }
 
@@ -135,19 +135,19 @@
 }
 
 .shortcut-card.selected {
-  background: #fafafa;
-  border-color: #09090b;
+  background: var(--bg-secondary);
+  border-color: var(--text-primary);
   border-width: 2px;
 }
 
 .shortcut-card.custom-card {
-  border: 2px dashed #d4d4d8;
-  background: #ffffff;
+  border: 2px dashed var(--border-color);
+  background: var(--card-bg);
 }
 
 .shortcut-card.custom-card:hover {
-  border-color: #09090b;
-  background: #fafafa;
+  border-color: var(--text-primary);
+  background: var(--bg-secondary);
 }
 
 .shortcut-emoji {
@@ -161,23 +161,28 @@
   height: 40px;
 }
 
+/* Invert icons in dark mode for better visibility */
+[data-theme="dark"] .shortcut-emoji img {
+  filter: invert(1) brightness(1.2);
+}
+
 .shortcut-name {
   font-size: 13px;
   font-weight: 600;
-  color: #09090b;
+  color: var(--text-primary);
   margin-bottom: 4px;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .shortcut-desc {
   font-size: 12px;
-  color: #71717a;
+  color: var(--text-secondary);
 }
 
 /* Try It Box */
 .try-it-box {
-  background: #fafafa;
-  border: 1px solid #e4e4e7;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
   border-radius: 8px;
   padding: 24px;
   text-align: center;
@@ -187,10 +192,10 @@
 .try-it-text {
   font-size: 24px;
   font-weight: 600;
-  color: #09090b;
+  color: var(--text-primary);
   font-family: "Consolas", "Monaco", monospace;
 }
 
 .try-it-text span {
-  color: #71717a;
+  color: var(--text-secondary);
 }

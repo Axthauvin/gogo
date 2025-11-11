@@ -20,7 +20,7 @@
 
 /* Modal Container */
 .modal-container {
-  background: #ffffff;
+  background: var(--card-bg);
   border-radius: 12px;
   box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
     0 10px 10px -5px rgba(0, 0, 0, 0.04);
@@ -91,14 +91,14 @@
 .modal-title {
   font-size: 18px;
   font-weight: 600;
-  color: #09090b;
+  color: var(--text-primary);
   margin-bottom: 4px;
   line-height: 1.3;
 }
 
 .modal-subtitle {
   font-size: 14px;
-  color: #71717a;
+  color: var(--text-secondary);
   line-height: 1.5;
 }
 
@@ -116,11 +116,11 @@
 .modal-highlight {
   display: inline-block;
   padding: 2px 8px;
-  background: #f4f4f5;
+  background: var(--bg-secondary);
   border-radius: 4px;
   font-family: "Consolas", "Monaco", monospace;
   font-size: 13px;
-  color: #09090b;
+  color: var(--text-primary);
   font-weight: 600;
   margin: 0 2px;
 }
@@ -129,7 +129,7 @@
 .modal-footer {
   padding: 16px 24px;
   background: #f9fafb;
-  border-top: 1px solid #e4e4e7;
+  border-top: 1px solid var(--border-color);
   display: flex;
   gap: 12px;
   justify-content: flex-end;
@@ -153,25 +153,24 @@
 }
 
 .modal-btn-cancel {
-  background: #ffffff;
-  border-color: #e4e4e7;
-  color: #09090b;
+  background: var(--card-bg);
+  border-color: var(--border-color);
+  color: var(--text-primary);
 }
 
 .modal-btn-cancel:hover {
-  background: #f4f4f5;
-  border-color: #d4d4d8;
+  background: var(--bg-secondary);
+  border-color: var(--text-secondary);
 }
 
 .modal-btn-confirm {
-  background: #09090b;
-  border-color: #09090b;
-  color: #ffffff;
+  background: var(--text-primary);
+  border-color: var(--text-primary);
+  color: var(--bg-primary);
 }
 
 .modal-btn-confirm:hover {
-  background: #18181b;
-  border-color: #18181b;
+  opacity: 0.85;
 }
 
 .modal-btn-confirm.danger {
@@ -208,7 +207,7 @@
   height: 32px;
   border: none;
   background: transparent;
-  color: #71717a;
+  color: var(--text-secondary);
   cursor: pointer;
   border-radius: 6px;
   display: flex;
@@ -218,8 +217,8 @@
 }
 
 .modal-close:hover {
-  background: #f4f4f5;
-  color: #09090b;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
 }
 
 .modal-close svg {
