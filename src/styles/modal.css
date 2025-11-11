@@ -110,7 +110,7 @@
 .modal-message {
   font-size: 14px;
   line-height: 1.6;
-  color: #52525b;
+  color: var(--text-secondary);
 }
 
 .modal-highlight {
@@ -128,7 +128,6 @@
 /* Modal Footer */
 .modal-footer {
   padding: 16px 24px;
-  background: #f9fafb;
   border-top: 1px solid var(--border-color);
   display: flex;
   gap: 12px;
@@ -176,6 +175,7 @@
 .modal-btn-confirm.danger {
   background: #dc2626;
   border-color: #dc2626;
+  color: var(--text-primary);
 }
 
 .modal-btn-confirm.danger:hover {

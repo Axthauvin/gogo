@@ -1,0 +1,40 @@
+/**
+ * Theme Styles
+ * Dark and light theme definitions
+ */
+
+/* Dark theme */
+[data-theme="dark"] {
+  --bg-primary: #09090b;
+  --bg-secondary: #18181b;
+  --bg-tertiary: #27272a;
+  --border-color: #27272a;
+  --text-primary: #fafafa;
+  --text-secondary: #a1a1aa;
+  --text-tertiary: #71717a;
+  --text-placeholder: #b5b5b8;
+  --shadow-sm: rgba(0, 0, 0, 0.2);
+  --shadow-md: rgba(0, 0, 0, 0.3);
+  --shadow-lg: rgba(0, 0, 0, 0.4);
+  --accent-color: #fafafa;
+  --hover-bg: rgba(255, 255, 255, 0.05);
+  --card-bg: #18181b;
+}
+
+/* Light theme - uses root defaults */
+[data-theme="light"] {
+  --bg-primary: #ffffff;
+  --bg-secondary: #f4f4f5;
+  --bg-tertiary: #fafafa;
+  --border-color: #e4e4e7;
+  --text-primary: #09090b;
+  --text-secondary: #71717a;
+  --text-tertiary: #a1a1aa;
+  --text-placeholder: #b5b5b8;
+  --shadow-sm: rgba(0, 0, 0, 0.05);
+  --shadow-md: rgba(0, 0, 0, 0.1);
+  --shadow-lg: rgba(0, 0, 0, 0.15);
+  --accent-color: #09090b;
+  --hover-bg: rgba(0, 0, 0, 0.05);
+  --card-bg: #ffffff;
+}

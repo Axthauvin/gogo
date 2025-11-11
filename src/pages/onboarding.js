@@ -1,18 +1,21 @@
-const browserAPI = typeof browser !== "undefined" ? browser : chrome;
+import { getStorage, setStorage } from "../core/storage.js";
+import { browserAPI } from "../core/browserAPI.js";
+import { showToast } from "../ui/components/toast.js";
+import { STORAGE_KEYS } from "../core/constants.js";
 
 // Onboarding state
 let selectedShortcuts = [];
 let currentStep = 1;
 
 // Onboarding functions
-function showOnboarding(step = null) {
+export function showOnboarding(step = null) {
   document.getElementById("onboarding-overlay").classList.remove("hidden");
   if (step) {
     nextOnboardingStep();
   }
 }
 
-function hideOnboarding() {
+export function hideOnboarding() {
   document.getElementById("onboarding-overlay").classList.add("hidden");
 }
 
@@ -48,11 +51,11 @@ function nextOnboardingStep() {
   }
 
   // Save progress after each step
-  storage.local.set({ onboardingStep: currentStep });
+  setStorage({ onboardingStep: currentStep });
   saveSelectedShortcuts();
 }
 
-function setupShortcutCards() {
+export function setupShortcutCards() {
   const cards = document.querySelectorAll(".shortcut-card:not(.custom-card)");
   const continueBtn = document.getElementById("continue-btn");
   const selectedCount = document.getElementById("selected-count");
@@ -73,7 +76,7 @@ function setupShortcutCards() {
       }
 
       // Save selected shortcuts in onboarding state
-      storage.local.set({ selectedShortcuts });
+      setStorage({ selectedShortcuts });
 
       // Update button state
       selectedCount.textContent = selectedShortcuts.length;
@@ -90,7 +93,7 @@ function customShortcut() {
 
 function finishOnboarding(askedAlias = null) {
   // Load selectedShortcuts from storage in case of page reload
-  storage.local.get("selectedShortcuts").then((data) => {
+  getStorage("selectedShortcuts").then((data) => {
     console.log("Loaded selectedShortcuts from storage:", data);
     if (data.selectedShortcuts) {
       selectedShortcuts = data.selectedShortcuts;
@@ -110,7 +113,7 @@ function finishOnboarding(askedAlias = null) {
     }
 
     // Mark onboarding as completed
-    storage.local.set({ onboardingCompleted: true });
+    setStorage({ [STORAGE_KEYS.ONBOARDING_COMPLETED]: true });
 
     hideOnboarding();
 
@@ -134,7 +137,7 @@ function finishOnboarding(askedAlias = null) {
 }
 
 function saveSelectedShortcuts() {
-  storage.local.get("aliases").then((data) => {
+  getStorage("aliases").then((data) => {
     const items = data && data.aliases ? data.aliases : [];
     selectedShortcuts.forEach((shortcut) => {
       // Check if alias doesn't already exist
@@ -142,8 +145,8 @@ function saveSelectedShortcuts() {
         items.push(shortcut);
       }
     });
-    storage.local.set({ aliases: items }).then(() => {
-      loadAliases();
+    setStorage({ aliases: items }).then(() => {
+      // Shortcuts saved, reload will happen when page initializes
     });
   });
 }
