@@ -5,6 +5,9 @@ const storage =
 
 const browserAPI = typeof browser !== "undefined" ? browser : chrome;
 
+// Detect Firefox to avoid showing Chrome-specific markup like <match>/<dim>
+const isFirefox = typeof browser !== "undefined";
+
 // webNavigation - more granular navigation events
 browserAPI.webNavigation.onCommitted.addListener(async (details) => {
   // filter subframes if you want: details.frameId === 0 is the top frame
@@ -58,7 +61,9 @@ browserAPI.omnibox.onInputChanged.addListener(async (text, suggest) => {
 
   if (matches.length === 0) {
     browserAPI.omnibox.setDefaultSuggestion({
-      description: `Create new shortcut: <match>${text}</match>`,
+      description: isFirefox
+        ? `Create new shortcut: ${text}`
+        : `Create new shortcut: <match>${text}</match>`,
     });
     suggest([]);
     return;
@@ -67,13 +72,17 @@ browserAPI.omnibox.onInputChanged.addListener(async (text, suggest) => {
   // Set the first match as the default suggestion (appears at top, highlighted)
   const firstMatch = matches[0];
   browserAPI.omnibox.setDefaultSuggestion({
-    description: `<match>${firstMatch.alias}</match> → <url>${firstMatch.url}</url>`,
+    description: isFirefox
+      ? `${firstMatch.alias} → ${firstMatch.url}`
+      : `<match>${firstMatch.alias}</match> → <url>${firstMatch.url}</url>`,
   });
 
   // Show remaining matches in dropdown
   const remainingMatches = matches.slice(1).map((item) => ({
     content: item.alias,
-    description: `<match>${item.alias}</match> → <dim>${item.url}</dim>`,
+    description: isFirefox
+      ? `${item.alias} → ${item.url}`
+      : `<match>${item.alias}</match> → <dim>${item.url}</dim>`,
   }));
 
   suggest(remainingMatches);
