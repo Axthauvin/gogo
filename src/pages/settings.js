@@ -32,6 +32,7 @@ import {
   showOnboarding,
   setupShortcutCards,
   hideOnboarding,
+  finishOnboarding,
 } from "./onboarding.js";
 
 // Global state
@@ -174,10 +175,22 @@ function handleQueryParams() {
  */
 async function checkOnboarding() {
   const data = await getStorage(STORAGE_KEYS.ONBOARDING_COMPLETED);
-  if (!data[STORAGE_KEYS.ONBOARDING_COMPLETED]) {
-    showOnboarding();
+  if (!data || !data[STORAGE_KEYS.ONBOARDING_COMPLETED]) {
+    const stepData = await getStorage(STORAGE_KEYS.ONBOARDING_STEP);
+    const currentStep = stepData && stepData[STORAGE_KEYS.ONBOARDING_STEP];
+
+    if (currentStep) {
+      const params = new URLSearchParams(window.location.search);
+      const created = params.get("create");
+      if (currentStep == 3) {
+        finishOnboarding(created);
+      } else {
+        showOnboarding(currentStep);
+      }
+    } else {
+      showOnboarding();
+    }
   } else {
-    console.log("Onboarding already completed.");
     hideOnboarding();
   }
 }

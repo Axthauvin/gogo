@@ -91,7 +91,7 @@ function customShortcut() {
   nextOnboardingStep();
 }
 
-function finishOnboarding(askedAlias = null) {
+export function finishOnboarding(askedAlias = null) {
   // Load selectedShortcuts from storage in case of page reload
   getStorage("selectedShortcuts").then((data) => {
     console.log("Loaded selectedShortcuts from storage:", data);
