@@ -5,3 +5,5 @@ node_modules/
 *.md
 
 package-lock.json
+
+*.ps1
