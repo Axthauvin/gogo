@@ -23,7 +23,7 @@ GoGo transforms your browser's address bar into a powerful shortcut engine (its 
 
 ## Quick Start
 
-1. **Install the extension** (see [Installation](#-installation) below)
+1. **Install the extension** (see [Installation](#installation) below)
 2. **Create your first shortcut**
    - Example: `gmail` → `https://mail.google.com`
 3. **Use it!** Type `go gmail` in your address bar
@@ -68,11 +68,11 @@ go red    → https://reddit.com
 #### Option 2: Manual Installation
 
 1. Download the [latest release](https://github.com/Axthauvin/gogo/releases/latest)
-2. Extract the `chrome-dist` ZIP file
+2. Extract the `gogo-chrome` ZIP file
 3. Open `chrome://extensions/` in your browser
 4. Enable **Developer mode** (toggle in top-right corner)
 5. Click **Load unpacked**
-6. Select the `dist-chrome` folder
+6. Select the `gogo-chrome` folder
 7. Done! 🎉
 
 ### Firefox
@@ -92,12 +92,12 @@ go red    → https://reddit.com
 
 ---
 
-## 🛠️ Development
+## Development
 
 ### Prerequisites
 
 - Node.js (only to build)
-- npm or yarn or pnpm
+- npm or yarn or pnpm (only to build)
 - Git
 
 ### Setup
@@ -118,23 +118,23 @@ npm run build
 
 ```
 gogo/
-├── .github/workflows/
+├── .github/workflows/        # CI/CD automation and GitHub Actions
 └── src/
-    ├── background/
-    ├── core/
-    ├── icons/
-    │   └── socials/
-    ├── modules/
-    │   ├── import-export/
-    │   ├── search/
-    │   ├── shortcuts/
-    │   └── theme/
-    ├── pages/
-    ├── styles/
-    ├── ui/
-    │   ├── components/
-    │   └── forms/
-    └── utils/
+    ├── background/           # Background scripts for extension lifecycle
+    ├── core/                 # Core functionality (storage, constants, browser APIs)
+    ├── icons/                # Extension icons and assets
+    │   └── socials/          # Social media icons
+    ├── modules/              # Feature modules
+    │   ├── import-export/    # Import/export shortcuts functionality
+    │   ├── search/           # Search and filtering logic
+    │   ├── shortcuts/        # Shortcut management (CRUD operations)
+    │   └── theme/            # Theme switching and customization
+    ├── pages/                # Extension pages (popup, settings, onboarding)
+    ├── styles/               # Global styles and CSS variables
+    ├── ui/                   # UI components and forms
+    │   ├── components/       # Reusable UI components
+    │   └── forms/            # Form components and validation
+    └── utils/                # Helper functions and utilities
 ```
 
 ### Build Commands
