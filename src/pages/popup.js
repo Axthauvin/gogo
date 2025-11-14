@@ -1,4 +1,9 @@
-const browserAPI = typeof browser !== "undefined" ? browser : chrome;
+/**
+ * Popup Script - Refactored
+ * Handles the extension popup behavior
+ */
+
+import { browserAPI } from "../core/browserAPI.js";
 
 (async function () {
   // Get the current active tab URL
@@ -6,10 +11,11 @@ const browserAPI = typeof browser !== "undefined" ? browser : chrome;
     active: true,
     currentWindow: true,
   });
+
   const currentTab = tabs[0];
   const currentUrl = currentTab?.url;
 
-  // If page already is settings page, close popup
+  // If page is already settings page, close popup
   if (
     currentUrl &&
     currentUrl.includes("src/settings.html") &&

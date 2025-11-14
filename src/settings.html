@@ -4,10 +4,12 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>GoGo</title>
+    <link rel="stylesheet" href="styles/variables.css" />
+    <link rel="stylesheet" href="styles/themes.css" />
     <link rel="stylesheet" href="settings.css" />
-    <link rel="stylesheet" href="toast.css" />
+    <link rel="stylesheet" href="styles/toast.css" />
     <link rel="stylesheet" href="onboarding.css" />
-    <link rel="stylesheet" href="modal.css" />
+    <link rel="stylesheet" href="styles/modal.css" />
   </head>
   <body>
     <!-- Onboarding Overlay -->
@@ -156,7 +158,7 @@
 
     <div class="container">
       <!-- Section 1: Create New Shortcut -->
-      <section id="create-section" class="section active">
+      <section id="create" class="section active">
         <h1 class="section-title">Create Shortcut</h1>
         <p class="section-subtitle">
           Add a new shortcut to your favorite destinations
@@ -259,7 +261,7 @@
       </section>
 
       <!-- Section 2: List Shortcuts -->
-      <section id="list-section" class="section">
+      <section id="list" class="section">
         <h1 class="section-title">Your Shortcuts</h1>
         <p class="section-subtitle">Manage all your shortcuts in one place</p>
 
@@ -281,7 +283,7 @@
       </section>
 
       <!-- Section 3: Options -->
-      <section id="options-section" class="section">
+      <section id="options" class="section">
         <h1 class="section-title">Options</h1>
         <p class="section-subtitle">Customize your GoGo experience</p>
 
@@ -740,7 +742,7 @@
       </section>
 
       <!-- Section 4: Help -->
-      <section id="help-section" class="section">
+      <section id="help" class="section">
         <h1 class="section-title">How to Use</h1>
         <p class="section-subtitle">Quick guide to get you started</p>
 
@@ -828,7 +830,7 @@
       </div>
     </div>
 
-    <script src="onboarding.js"></script>
-    <script src="settings.js"></script>
+    <script type="module" src="pages/onboarding.js"></script>
+    <script type="module" src="pages/settings.js"></script>
   </body>
 </html>
